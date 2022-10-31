@@ -8,7 +8,7 @@ import java.util.List;
 
 @FeignClient(name = "game-store-catalog")
 public interface GameStoreCatalogClient {
-    @RequestMapping(value = "/game", method = RequestMethod.GET)
+    @RequestMapping(value = "/console/{id}", method = RequestMethod.GET)
 //    public String getRandomQuote();
-    public List<GameViewModel> getAllGames();
+    public ConsoleViewModel getConsoleById();
 }

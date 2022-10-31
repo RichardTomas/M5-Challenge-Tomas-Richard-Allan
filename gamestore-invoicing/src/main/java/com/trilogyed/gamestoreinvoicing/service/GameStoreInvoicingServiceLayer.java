@@ -162,44 +162,44 @@ public class GameStoreInvoicingServiceLayer {
 
         return buildInvoiceViewModel(invoice);
     }
-
-    public InvoiceViewModel getInvoice(long id) {
-        Optional<Invoice> invoice = invoiceRepo.findById(id);
-        if (invoice == null)
-            return null;
-        else
-            return buildInvoiceViewModel(invoice.get());
-    }
-
-    public List<InvoiceViewModel> getAllInvoices() {
-        List<Invoice> invoiceList = invoiceRepo.findAll();
-        List<InvoiceViewModel> ivmList = new ArrayList<>();
-        List<InvoiceViewModel> exceptionList = null;
-
-        if (invoiceList == null) {
-            return exceptionList;
-        } else {
-            invoiceList.stream().forEach(i -> {
-                ivmList.add(buildInvoiceViewModel(i));
-            });
-        }
-        return ivmList;
-    }
-
-    public List<InvoiceViewModel> getInvoicesByCustomerName(String name) {
-        List<Invoice> invoiceList = invoiceRepo.findByName(name);
-        List<InvoiceViewModel> ivmList = new ArrayList<>();
-        List<InvoiceViewModel> exceptionList = null;
-
-        if (invoiceList == null) {
-            return exceptionList;
-        } else {
-            invoiceList.stream().forEach(i -> ivmList.add(buildInvoiceViewModel(i)));
-        }
-        return ivmList;
-    }
-
-    public void deleteInvoice(long id){
-        invoiceRepo.deleteById(id);
-    }
+//
+//    public InvoiceViewModel getInvoice(long id) {
+//        Optional<Invoice> invoice = invoiceRepo.findById(id);
+//        if (invoice == null)
+//            return null;
+//        else
+//            return buildInvoiceViewModel(invoice.get());
+//    }
+//
+//    public List<InvoiceViewModel> getAllInvoices() {
+//        List<Invoice> invoiceList = invoiceRepo.findAll();
+//        List<InvoiceViewModel> ivmList = new ArrayList<>();
+//        List<InvoiceViewModel> exceptionList = null;
+//
+//        if (invoiceList == null) {
+//            return exceptionList;
+//        } else {
+//            invoiceList.stream().forEach(i -> {
+//                ivmList.add(buildInvoiceViewModel(i));
+//            });
+//        }
+//        return ivmList;
+//    }
+//
+//    public List<InvoiceViewModel> getInvoicesByCustomerName(String name) {
+//        List<Invoice> invoiceList = invoiceRepo.findByName(name);
+//        List<InvoiceViewModel> ivmList = new ArrayList<>();
+//        List<InvoiceViewModel> exceptionList = null;
+//
+//        if (invoiceList == null) {
+//            return exceptionList;
+//        } else {
+//            invoiceList.stream().forEach(i -> ivmList.add(buildInvoiceViewModel(i)));
+//        }
+//        return ivmList;
+//    }
+//
+//    public void deleteInvoice(long id){
+//        invoiceRepo.deleteById(id);
+//    }
 }
