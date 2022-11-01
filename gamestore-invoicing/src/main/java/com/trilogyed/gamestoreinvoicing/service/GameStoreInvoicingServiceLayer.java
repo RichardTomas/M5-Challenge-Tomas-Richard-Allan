@@ -1,6 +1,7 @@
 package com.trilogyed.gamestoreinvoicing.service;
 
-import com.trilogyed.gamestoreinvoicing.model.Invoice;
+import com.trilogyed.gamestoreinvoicing.config.util.feign.GameStoreCatalogClient;
+import com.trilogyed.gamestoreinvoicing.model.*;
 import com.trilogyed.gamestoreinvoicing.repository.InvoiceRepository;
 import com.trilogyed.gamestoreinvoicing.repository.ProcessingFeeRepository;
 import com.trilogyed.gamestoreinvoicing.repository.TaxRepository;
@@ -16,17 +17,22 @@ import java.util.Optional;
 
 @Component
 public class GameStoreInvoicingServiceLayer {
+
     private final BigDecimal PROCESSING_FEE = new BigDecimal("15.49");
     private final BigDecimal MAX_INVOICE_TOTAL = new BigDecimal("999.99");
     private final String GAME_ITEM_TYPE = "Game";
     private final String CONSOLE_ITEM_TYPE = "Console";
     private final String TSHIRT_ITEM_TYPE = "T-Shirt";
+
     InvoiceRepository invoiceRepo;
     TaxRepository taxRepo;
     ProcessingFeeRepository processingFeeRepo;
+    GameStoreCatalogClient client;
+
 
     @Autowired
-    public GameStoreInvoicingServiceLayer(InvoiceRepository invoiceRepo, TaxRepository taxRepo, ProcessingFeeRepository processingFeeRepo) {
+    public GameStoreInvoicingServiceLayer(GameStoreCatalogClient client, InvoiceRepository invoiceRepo, TaxRepository taxRepo, ProcessingFeeRepository processingFeeRepo) {
+        this.client = client;
         this.invoiceRepo = invoiceRepo;
         this.taxRepo = taxRepo;
         this.processingFeeRepo = processingFeeRepo;
@@ -58,51 +64,44 @@ public class GameStoreInvoicingServiceLayer {
 
         //Checks the item type and get the correct unit price
         //Check if we have enough quantity
+        // Jeff/Andrew method
         if (invoiceViewModel.getItemType().equals(CONSOLE_ITEM_TYPE)) {
-            Console tempCon = null;
-            Optional<Console> returnVal = consoleRepo.findById(invoiceViewModel.getItemId());
 
-            if (returnVal.isPresent()) {
-                tempCon = returnVal.get();
-            } else {
+            Console returnVal = client.getConsoleById(invoiceViewModel.getItemId());
+            if (returnVal == null) {
                 throw new IllegalArgumentException("Requested item is unavailable.");
             }
 
-            if (invoiceViewModel.getQuantity()> tempCon.getQuantity()){
+            if (invoiceViewModel.getQuantity()> returnVal.getQuantity()){
                 throw new IllegalArgumentException("Requested quantity is unavailable.");
             }
 
-            invoice.setUnitPrice(tempCon.getPrice());
-
+            invoice.setUnitPrice(returnVal.getPrice());
         } else if (invoiceViewModel.getItemType().equals(GAME_ITEM_TYPE)) {
-            Game tempGame = null;
-            Optional<Game> returnVal = gameRepo.findById(invoiceViewModel.getItemId());
 
-            if (returnVal.isPresent()) {
-                tempGame = returnVal.get();
-            } else {
+            Game returnVal = client.getGameInfo(invoiceViewModel.getItemId());
+
+            if (returnVal == null) {
                 throw new IllegalArgumentException("Requested item is unavailable.");
             }
 
-            if(invoiceViewModel.getQuantity() >  tempGame.getQuantity()){
+            if (invoiceViewModel.getQuantity()> returnVal.getQuantity()){
                 throw new IllegalArgumentException("Requested quantity is unavailable.");
             }
-            invoice.setUnitPrice(tempGame.getPrice());
 
         } else if (invoiceViewModel.getItemType().equals(TSHIRT_ITEM_TYPE)) {
-            TShirt tempTShirt = null;
-            Optional<TShirt> returnVal = tShirtRepo.findById(invoiceViewModel.getItemId());
 
-            if (returnVal.isPresent()) {
-                tempTShirt = returnVal.get();
-            } else {
+            TShirt returnVal = client.getTShirt(invoiceViewModel.getItemId());
+
+            if (returnVal == null) {
                 throw new IllegalArgumentException("Requested item is unavailable.");
             }
 
-            if(invoiceViewModel.getQuantity() >  tempTShirt.getQuantity()){
+            if (invoiceViewModel.getQuantity()> returnVal.getQuantity()){
                 throw new IllegalArgumentException("Requested quantity is unavailable.");
             }
-            invoice.setUnitPrice(tempTShirt.getPrice());
+
+            invoice.setUnitPrice(returnVal.getPrice());
 
         } else {
             throw new IllegalArgumentException(invoiceViewModel.getItemType()+
@@ -162,44 +161,67 @@ public class GameStoreInvoicingServiceLayer {
 
         return buildInvoiceViewModel(invoice);
     }
-//
-//    public InvoiceViewModel getInvoice(long id) {
-//        Optional<Invoice> invoice = invoiceRepo.findById(id);
-//        if (invoice == null)
-//            return null;
-//        else
-//            return buildInvoiceViewModel(invoice.get());
-//    }
-//
-//    public List<InvoiceViewModel> getAllInvoices() {
-//        List<Invoice> invoiceList = invoiceRepo.findAll();
-//        List<InvoiceViewModel> ivmList = new ArrayList<>();
-//        List<InvoiceViewModel> exceptionList = null;
-//
-//        if (invoiceList == null) {
-//            return exceptionList;
-//        } else {
-//            invoiceList.stream().forEach(i -> {
-//                ivmList.add(buildInvoiceViewModel(i));
-//            });
-//        }
-//        return ivmList;
-//    }
-//
-//    public List<InvoiceViewModel> getInvoicesByCustomerName(String name) {
-//        List<Invoice> invoiceList = invoiceRepo.findByName(name);
-//        List<InvoiceViewModel> ivmList = new ArrayList<>();
-//        List<InvoiceViewModel> exceptionList = null;
-//
-//        if (invoiceList == null) {
-//            return exceptionList;
-//        } else {
-//            invoiceList.stream().forEach(i -> ivmList.add(buildInvoiceViewModel(i)));
-//        }
-//        return ivmList;
-//    }
-//
-//    public void deleteInvoice(long id){
-//        invoiceRepo.deleteById(id);
-//    }
+
+    public InvoiceViewModel getInvoice(long id) {
+        Optional<Invoice> invoice = invoiceRepo.findById(id);
+        if (invoice == null)
+            return null;
+        else
+            return buildInvoiceViewModel(invoice.get());
+    }
+
+    public List<InvoiceViewModel> getAllInvoices() {
+        List<Invoice> invoiceList = invoiceRepo.findAll();
+        List<InvoiceViewModel> ivmList = new ArrayList<>();
+        List<InvoiceViewModel> exceptionList = null;
+
+        if (invoiceList == null) {
+            return exceptionList;
+        } else {
+            invoiceList.stream().forEach(i -> {
+                ivmList.add(buildInvoiceViewModel(i));
+            });
+        }
+        return ivmList;
+    }
+
+    public List<InvoiceViewModel> getInvoicesByCustomerName(String name) {
+        List<Invoice> invoiceList = invoiceRepo.findByName(name);
+        List<InvoiceViewModel> ivmList = new ArrayList<>();
+        List<InvoiceViewModel> exceptionList = null;
+
+        if (invoiceList == null) {
+            return exceptionList;
+        } else {
+            invoiceList.stream().forEach(i -> ivmList.add(buildInvoiceViewModel(i)));
+        }
+        return ivmList;
+    }
+
+    public void deleteInvoice(long id){
+        invoiceRepo.deleteById(id);
+    }
+    //Helper Methods...
+
+
+    public InvoiceViewModel buildInvoiceViewModel(Invoice invoice) {
+        InvoiceViewModel invoiceViewModel = new InvoiceViewModel();
+        invoiceViewModel.setId(invoice.getId());
+        invoiceViewModel.setName(invoice.getName());
+        invoiceViewModel.setStreet(invoice.getStreet());
+        invoiceViewModel.setCity(invoice.getCity());
+        invoiceViewModel.setState(invoice.getState());
+        invoiceViewModel.setZipcode(invoice.getZipcode());
+        invoiceViewModel.setItemType(invoice.getItemType());
+        invoiceViewModel.setItemId(invoice.getItemId());
+        invoiceViewModel.setUnitPrice(invoice.getUnitPrice());
+        invoiceViewModel.setQuantity(invoice.getQuantity());
+        invoiceViewModel.setSubtotal(invoice.getSubtotal());
+        invoiceViewModel.setProcessingFee(invoice.getProcessingFee());
+        invoiceViewModel.setTax(invoice.getTax());
+        invoiceViewModel.setProcessingFee(invoice.getProcessingFee());
+        invoiceViewModel.setTotal(invoice.getTotal());
+
+        return invoiceViewModel;
+    }
 }

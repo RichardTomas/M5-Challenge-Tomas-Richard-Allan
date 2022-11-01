@@ -1,9 +1,8 @@
 package com.trilogyed.gamestoreinvoicing.controller;
 
-import com.trilogyed.gamestoreinvoicing.config.util.feign.GameStoreCatalogClient;
+
 import com.trilogyed.gamestoreinvoicing.service.GameStoreInvoicingServiceLayer;
 import com.trilogyed.gamestoreinvoicing.viewModel.InvoiceViewModel;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,15 +11,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/invoice")
-@CrossOrigin(origins = {"http://localhost:3000"})
+//@CrossOrigin(origins = {"http://localhost:3000"})
 public class InvoiceController {
-    @Autowired
-    private final GameStoreCatalogClient client;
-    GameStoreInvoicingServiceLayer service;
 
-    InvoiceController(GameStoreCatalogClient client) {
-        this.client = client;
-    }
+    GameStoreInvoicingServiceLayer service;
 
     // Assumption: All orders are final and data privacy is not top priority. Therefore, the Update & Delete EndPoints
     // are left out by design due to its potential danger. The getAllInvoices is a questionable one since it could
