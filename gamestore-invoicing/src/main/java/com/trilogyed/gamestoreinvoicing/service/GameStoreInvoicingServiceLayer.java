@@ -23,12 +23,10 @@ public class GameStoreInvoicingServiceLayer {
     private final String GAME_ITEM_TYPE = "Game";
     private final String CONSOLE_ITEM_TYPE = "Console";
     private final String TSHIRT_ITEM_TYPE = "T-Shirt";
-
+    GameStoreCatalogClient client;
     InvoiceRepository invoiceRepo;
     TaxRepository taxRepo;
     ProcessingFeeRepository processingFeeRepo;
-    GameStoreCatalogClient client;
-
 
     @Autowired
     public GameStoreInvoicingServiceLayer(GameStoreCatalogClient client, InvoiceRepository invoiceRepo, TaxRepository taxRepo, ProcessingFeeRepository processingFeeRepo) {

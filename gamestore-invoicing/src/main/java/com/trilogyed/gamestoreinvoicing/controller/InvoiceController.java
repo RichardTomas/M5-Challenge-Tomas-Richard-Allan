@@ -3,6 +3,7 @@ package com.trilogyed.gamestoreinvoicing.controller;
 
 import com.trilogyed.gamestoreinvoicing.service.GameStoreInvoicingServiceLayer;
 import com.trilogyed.gamestoreinvoicing.viewModel.InvoiceViewModel;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,7 +14,7 @@ import java.util.List;
 @RequestMapping(value = "/invoice")
 //@CrossOrigin(origins = {"http://localhost:3000"})
 public class InvoiceController {
-
+    @Autowired
     GameStoreInvoicingServiceLayer service;
 
     // Assumption: All orders are final and data privacy is not top priority. Therefore, the Update & Delete EndPoints
@@ -56,7 +57,7 @@ public class InvoiceController {
         List<InvoiceViewModel> invoiceViewModelList = service.getInvoicesByCustomerName(name);
 
         if (invoiceViewModelList == null || invoiceViewModelList.isEmpty()) {
-            throw new IllegalArgumentException("No invoices were found for: "+name);
+            throw new IllegalArgumentException("No invoices were found for: " + name);
         } else {
             return invoiceViewModelList;
         }
