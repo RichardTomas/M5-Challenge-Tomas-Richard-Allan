@@ -86,7 +86,7 @@ public class GameStoreInvoicingServiceLayer {
             if (invoiceViewModel.getQuantity()> returnVal.getQuantity()){
                 throw new IllegalArgumentException("Requested quantity is unavailable.");
             }
-
+            invoice.setUnitPrice(returnVal.getPrice());
         } else if (invoiceViewModel.getItemType().equals(TSHIRT_ITEM_TYPE)) {
 
             TShirt returnVal = client.getTShirt(invoiceViewModel.getItemId());

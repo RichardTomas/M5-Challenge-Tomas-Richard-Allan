@@ -16,7 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
+//Code was refactored from gamestore startercode provided for challenge-5
 @RestControllerAdvice
 @RequestMapping(produces = "application/json")
 public class GameStoreCatalogControllerExceptionHandler extends ResponseEntityExceptionHandler {

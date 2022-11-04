@@ -4,7 +4,7 @@ package com.trilogyed.gamestorecatalog.viewModel;
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.util.Objects;
-
+//Code was refactored from gamestore startercode provided for challenge-5
 public class GameViewModel {
 
     private long id;

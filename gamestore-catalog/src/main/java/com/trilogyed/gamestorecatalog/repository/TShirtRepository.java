@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-
+//Code was refactored from gamestore startercode provided for challenge-5
 @Repository
 public interface TShirtRepository extends JpaRepository<TShirt, Long> {
     List<TShirt> findAllByColor(String color);
