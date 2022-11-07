@@ -18,11 +18,9 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -423,7 +421,7 @@ public class GameControllerTest {
     @Test
     public void shouldFailCreateGameWithInvalidData() throws Exception {
 
-        //perform the call, pass argutments (path variables & requestBody), use objectMapper to convert objects
+        //perform the call, pass arguments (path variables & requestBody), use objectMapper to convert objects
         // from/to JSON format.
 
         //Arrange

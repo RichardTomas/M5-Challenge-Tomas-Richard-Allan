@@ -235,7 +235,7 @@ public class GameStoreCatalogServiceLayer {
         // Validate incoming TShirt Data in the view model
         if (tShirtViewModel==null) throw new IllegalArgumentException("No TShirt is passed! TShirt object is null!");
 
-        //make sure the Console exists. and if not, throw exception...
+        //make sure the TShirt exists. and if not, throw exception...
         if (this.getTShirt(tShirtViewModel.getId())==null)
             throw new IllegalArgumentException("No such TShirt to update.");
 
